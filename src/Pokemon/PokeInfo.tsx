@@ -1,9 +1,11 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 import { PokeMoves } from "./PokeMoves";
-import {PokeHeader} from "./PokeHeader";
+import { PokeHeader } from "./PokeHeader";
+import { useSelector } from "react-redux";
+import { IState } from "../reducer/rootReducer";
 
-export const PokeInfo = ({ pokemonInfo }) => {
+const PokeInfoHolder = ({ pokemonInfo }) => {
   return (
     <StyledFlex>
       <PokeHeader pokemonInfo={pokemonInfo} />
@@ -11,6 +13,8 @@ export const PokeInfo = ({ pokemonInfo }) => {
     </StyledFlex>
   );
 };
+
+export const PokeInfo = memo(PokeInfoHolder);
 
 const StyledFlex = styled.div`
   display: flex;

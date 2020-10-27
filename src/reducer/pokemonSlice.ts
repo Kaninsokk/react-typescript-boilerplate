@@ -9,6 +9,8 @@ const pokemonSlice = createSlice({
   },
   reducers: {
     initFetchPokemon: (state) => {
+      console.log("isLoading!");
+
       state.isLoading = true;
     },
     setPokemon: (state, { payload }) => {

@@ -1,28 +1,25 @@
-import React, {useEffect, useState} from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { IState } from "../reducer/rootReducer";
-import { Input } from "../Common/Input";
+import { useMachine } from "@xstate/react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { PokeInfo } from "./PokeInfo";
 import { Button } from "../Common/Button";
+import { Input } from "../Common/Input";
+import { createFetchMachine } from "../stateMachine/pokemonInfoMachine";
+import { PokeInfo } from "./PokeInfo";
 
 export const Pokemon = () => {
-  const dispatch = useDispatch();
   const [pokemonNameField, setPokemonNameField] = useState("");
-  const { pokemonInfo, hasLoaded } = useSelector(
-    (state: IState) => state.pokemon
-  );
+  const [currentState, send] = useMachine(createFetchMachine);
 
-  useEffect(() => {
-    dispatch({ type: "FETCH_POKEMON", payload: 'ditto' });
-  }, [])
+  const { pokemonInfo } = currentState.context;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPokemonNameField(event.target.value);
   };
 
-  const handleSearch = () =>
-    dispatch({ type: "FETCH_POKEMON", payload: pokemonNameField });
+  const handleSearch = () => {
+    // dispatch({ type: "FETCH_POKEMON", payload: pokemonNameField });
+    send("SEARCH", { name: pokemonNameField });
+  };
 
   return (
     <PokemonStyling>
@@ -30,7 +27,7 @@ export const Pokemon = () => {
 
       <Button onClick={handleSearch}>Search</Button>
 
-      {hasLoaded && (
+      {currentState.value === "loaded" && (
         <PokemonArea>
           <PokeInfo pokemonInfo={pokemonInfo} />
         </PokemonArea>

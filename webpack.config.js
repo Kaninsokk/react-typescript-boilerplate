@@ -5,6 +5,7 @@ module.exports = {
   entry: ["./index.tsx"],
   devServer: {
     hot: true,
+    port: "9000",
   },
   module: {
     rules: [

@@ -1,27 +1,26 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Axios from "axios";
+import { useMachine } from "@xstate/react";
+import { useDispatch } from "react-redux";
+import { createPokemonMovesMachine as pokemonMovesMachine } from "../stateMachine/pokemonMovesMachine";
 
 export const PokeMoves = ({ moves }) => {
-  const [movesData, setMovesData] = useState([]);
-
-  const addMove = (move) => setMovesData((current) => [...current, move]);
+  const [currentState, send] = useMachine(pokemonMovesMachine);
 
   useEffect(() => {
-    setMovesData([]);
-
-    moves.forEach(({ move }) => {
-      Axios.get(move.url).then(({ data }) => addMove(data));
-    });
+    send("FETCH", { moveList: moves });
   }, [moves]);
+
+  const { moveList } = currentState.context;
 
   return (
     <StyledFlex>
-      {movesData.length <= 0 ? (
+      {currentState.value === "loading" ? (
         <div>Fetching moves...</div>
       ) : (
-        movesData.map((move) => (
-          <ListStyle>
+        moveList.map((move) => (
+          <ListStyle key={move.name}>
             {move.name} - {move.type.name}
           </ListStyle>
         ))

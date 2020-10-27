@@ -1,4 +1,4 @@
-import { takeLatest, retry, put } from "redux-saga/effects";
+import { takeLatest, retry, put, delay } from "redux-saga/effects";
 import { increment } from "../reducer/counterSlice";
 import Axios from "axios";
 import { initFetchPokemon, setPokemon } from "../reducer/pokemonSlice";
@@ -10,17 +10,15 @@ function* fetchPokemon(pokemonName: string) {
 
 function* fetchPokemonList({ payload }: PayloadAction<string>) {
   try {
-    put(initFetchPokemon());
+    yield put(initFetchPokemon());
+
+    yield delay(1000);
 
     const response = yield retry(3, 2000, fetchPokemon, payload);
 
-    response.data.moves.forEach(({ move }) => {
-      Axios.get(move.url).then(console.log);
-    });
-
     yield put(setPokemon(response.data));
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 }
 
